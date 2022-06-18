@@ -1,7 +1,9 @@
 package com.project.ClubMileage.dto.request;
 
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class EventsRequestDto {
 
     private String type;
