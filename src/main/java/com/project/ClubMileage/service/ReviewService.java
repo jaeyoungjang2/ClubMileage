@@ -1,8 +1,17 @@
 package com.project.ClubMileage.service;
 
+import com.project.ClubMileage.domain.Member;
+import com.project.ClubMileage.domain.Photo;
+import com.project.ClubMileage.domain.Place;
 import com.project.ClubMileage.domain.Review;
+import com.project.ClubMileage.dto.PostRequestDto;
 import com.project.ClubMileage.dto.request.EventsRequestDto;
+import com.project.ClubMileage.repository.PhotoRepository;
+import com.project.ClubMileage.repository.MemberRepository;
+import com.project.ClubMileage.repository.PlaceRepository;
 import com.project.ClubMileage.repository.ReviewRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,25 +26,33 @@ import org.springframework.web.client.RestTemplate;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final MemberRepository memberRepository;
+    private final PhotoRepository photoRepository;
+    private final PlaceRepository placeRepository;
 
     public void happens(EventsRequestDto eventsRequestDto) {
         // add 일 경우 이벤트 저장
-        System.out.println(eventsRequestDto.getAction());
-        if (eventsRequestDto.getAction().equals("ADD")) {
-            Review review = new Review();
-            reviewRepository.save(review);
-        }
         // mod 일 경우 이벤트 수정
         // delete 일 경우 이벤트 삭제
     }
 
-    public void save() throws JSONException {
-        Review review = new Review();
+    public void save(PostRequestDto postRequestDto, List<String> imageUrls) throws JSONException {
+        Member member = memberRepository.findByUuid(postRequestDto.getUserId());
+        Place place = placeRepository.findByUuid(postRequestDto.getPlaceId());
+
+        List<Photo> photos = new ArrayList<>();
+        for (String imageUrl : imageUrls) {
+            photos.add(new Photo(imageUrl));
+        }
+        photoRepository.saveAll(photos);
+
+        Review review = new Review(postRequestDto, member, photos, place);
         reviewRepository.save(review);
-        sendHttpRequest(review);
+
+        sendPostEventRequest(review);
     }
 
-    private void sendHttpRequest(Review review) throws JSONException {
+    private void sendPostEventRequest(Review review) throws JSONException {
         String url = "http://localhost:8080/events";
 
         RestTemplate restTemplate = new RestTemplate(); // 비동기 전달

@@ -11,5 +11,5 @@ public class Place {
     @GeneratedValue
     private Long id;
 
-    private String placeUuid;
+    private String uuid;
 }

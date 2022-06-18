@@ -7,5 +7,7 @@ public class PostRequestDto {
     // user uuid
     private String userId;
 
-    private String contents;
+    private String content;
+
+    private String placeId;
 }
