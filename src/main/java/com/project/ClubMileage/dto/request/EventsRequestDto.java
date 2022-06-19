@@ -1,5 +1,6 @@
 package com.project.ClubMileage.dto.request;
 
+import com.project.ClubMileage.util.Event;
 import java.util.List;
 import lombok.Getter;
 
@@ -8,7 +9,7 @@ public class EventsRequestDto {
 
     private String type;
 
-    private String action;
+    private Event action;
 
     private String reviewId;
 

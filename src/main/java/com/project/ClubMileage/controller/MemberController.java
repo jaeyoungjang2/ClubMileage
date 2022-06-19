@@ -14,7 +14,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/users")
-    public void join(@RequestBody MemberRequestDto memberRequestDto) {
-        memberService.join(memberRequestDto);
+    public String join(@RequestBody MemberRequestDto memberRequestDto) {
+        return memberService.join(memberRequestDto);
     }
 }

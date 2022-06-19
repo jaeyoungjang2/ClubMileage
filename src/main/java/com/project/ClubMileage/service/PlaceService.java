@@ -12,9 +12,10 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
 
-
-    public void save(PlaceRequestDto placeRequestDto) {
+    public String save(PlaceRequestDto placeRequestDto) {
         Place place = new Place(placeRequestDto);
         placeRepository.save(place);
+
+        return place.getUuid();
     }
 }

@@ -39,7 +39,6 @@ public class ReviewController {
             String fileName = dirName + "/" + UUID.randomUUID() + file.getName();   // S3에 저장된 파일 이름
             imagesUrls.add(fileName);
         }
-
         return imagesUrls;
     }
 

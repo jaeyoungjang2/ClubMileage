@@ -10,9 +10,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Member {
 
     @Id
@@ -33,7 +35,7 @@ public class Member {
 
     public Member(MemberRequestDto memberRequestDto, Point point) {
         this.point = point;
-        this.username = memberRequestDto.getId();
+        this.username = memberRequestDto.getUsername();
         this.password = memberRequestDto.getPassword();
     }
 }

@@ -17,11 +17,12 @@ public class MemberService {
     private final PointRepository pointRepository;
 
     @Transactional
-    public void join(MemberRequestDto memberRequestDto) {
+    public String join(MemberRequestDto memberRequestDto) {
         Point point = new Point();
         Member member = new Member(memberRequestDto, point);
 
         pointRepository.save(point);
         memberRepository.save(member);
+        return member.getUuid();
     }
 }

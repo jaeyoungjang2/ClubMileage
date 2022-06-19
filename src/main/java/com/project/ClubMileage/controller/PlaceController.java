@@ -14,7 +14,7 @@ public class PlaceController {
     private final PlaceService placeService;
 
     @PostMapping("/places")
-    public void save(@RequestBody PlaceRequestDto placeRequestDto) {
-        placeService.save(placeRequestDto)
+    public String save(@RequestBody PlaceRequestDto placeRequestDto) {
+        return placeService.save(placeRequestDto);
     }
 }

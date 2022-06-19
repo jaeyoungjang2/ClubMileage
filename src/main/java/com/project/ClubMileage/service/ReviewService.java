@@ -14,6 +14,7 @@ import com.project.ClubMileage.repository.ReviewRepository;
 import com.project.ClubMileage.util.Event;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,16 +34,26 @@ public class ReviewService {
     private final PlaceRepository placeRepository;
     private final PointRepository pointRepository;
 
+    @Transactional
     public void happens(EventsRequestDto eventsRequestDto) {
+        System.out.println("HI");
         Place place = placeRepository.findByUuid(eventsRequestDto.getPlaceId());
         Member member = memberRepository.findByUuid(eventsRequestDto.getUserId());
         // 텍스트가 1글자 이상인 경우 1점
         // 1장 이상의 사진이 있을 경우 1점
         // 특정 장소의 첫 리뷰일 경우 -> 사진이 존재하는 리뷰이고, 해당 장소에 리뷰가 없을 경우
+
+        // 리뷰 저장
         if (eventsRequestDto.getAction().equals(Event.ADD)) {
-            if (eventsRequestDto.getAttachedPhotoIds().size() >= 1
-                && reviewRepository.findByPlace(place).size() == 0) {
-                // toDo: 포인트 변경하기
+            if (eventsRequestDto.getContent().length() >= 1) {
+                member.getPoint().addPoint();
+            }
+            if (eventsRequestDto.getAttachedPhotoIds().size() >= 1) {
+                member.getPoint().addPoint();
+            }
+            // 보너스 점수 (사진이 존재하는 리뷰이고, 해당 장소에 리뷰가 없을 경우)
+            // 리뷰를 저장한 뒤 상황이기 때문에 해당 장소에 리뷰가 1개 있을 경우로 계산
+            if (reviewRepository.findByPlace(place).size() == 1) {
                 member.getPoint().addPoint();
             }
         }
@@ -66,10 +77,10 @@ public class ReviewService {
         Review review = new Review(postRequestDto, member, photos, place);
         reviewRepository.save(review);
 
-        sendPostEventRequest(review);
+        sendPostEventRequest(review, postRequestDto.getUserId());
     }
 
-    private void sendPostEventRequest(Review review) throws JSONException {
+    private void sendPostEventRequest(Review review, String userUuid) throws JSONException {
         String url = "http://localhost:8080/events";
 
         RestTemplate restTemplate = new RestTemplate(); // 비동기 전달
@@ -77,14 +88,18 @@ public class ReviewService {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
         JSONObject jsonObject = new JSONObject();
-
+        ArrayList arrayList = new ArrayList();
+        arrayList.add("4");
         jsonObject.put("type", "REVIEW");
-        jsonObject.put("action", "ADD");
+        jsonObject.put("attachedPhotoIds", arrayList);
+        jsonObject.put("attached", arrayList);
+        jsonObject.put("attachedPhoto", arrayList);
+        jsonObject.put("abc", arrayList);
+        jsonObject.put("action", "add");
         jsonObject.put("reviewId", review.getUuid());
         jsonObject.put("content", review.getContent());
-//        jsonObject.put("attachedPhotoids", );
-//        jsonObject.put("userId", );
-//        jsonObject.put("placeId",);
+        jsonObject.put("userId", userUuid);
+        jsonObject.put("placeId", review.getPlace().getUuid());
 
         HttpEntity<String> logRequest = new HttpEntity<>(jsonObject.toString(), httpHeaders);
         restTemplate.postForEntity(url, logRequest, String.class);
