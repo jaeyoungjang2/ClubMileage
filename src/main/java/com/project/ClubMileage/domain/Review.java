@@ -37,10 +37,14 @@ public class Review {
     @OneToOne
     private Place place;
 
-    public Review(PostRequestDto postRequestDto, Member member, List<Photo> photos, Place place) {
+    @OneToOne
+    private ReviewPointStatus reviewPointStatus;
+
+    public Review(PostRequestDto postRequestDto, Member member, List<Photo> photos, Place place, ReviewPointStatus reviewPointStatus) {
         this.content = postRequestDto.getContent();
         this.member = member;
         this.photos = photos;
         this.place = place;
+        this.reviewPointStatus = reviewPointStatus;
     }
 }
