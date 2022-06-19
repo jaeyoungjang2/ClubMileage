@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -14,13 +13,13 @@ public class Point {
     @GeneratedValue
     private Long id;
 
-    private int myPoint;
+    private int score;
 
     public Point() {
-        this.myPoint = 0;
+        this.score = 0;
     }
 
     public void addPoint() {
-        this.myPoint ++;
+        this.score ++;
     }
 }

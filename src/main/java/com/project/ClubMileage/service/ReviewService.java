@@ -1,14 +1,19 @@
 package com.project.ClubMileage.service;
 
+import static com.project.ClubMileage.domain.PointHistory.PointStatus.*;
+
 import com.project.ClubMileage.domain.Member;
 import com.project.ClubMileage.domain.Photo;
 import com.project.ClubMileage.domain.Place;
+import com.project.ClubMileage.domain.PointHistory;
+import com.project.ClubMileage.domain.PointHistory.PointStatus;
 import com.project.ClubMileage.domain.Review;
 import com.project.ClubMileage.dto.PostRequestDto;
 import com.project.ClubMileage.dto.request.EventsRequestDto;
 import com.project.ClubMileage.repository.PhotoRepository;
 import com.project.ClubMileage.repository.MemberRepository;
 import com.project.ClubMileage.repository.PlaceRepository;
+import com.project.ClubMileage.repository.PointHistoryRepository;
 import com.project.ClubMileage.repository.PointRepository;
 import com.project.ClubMileage.repository.ReviewRepository;
 import com.project.ClubMileage.util.Event;
@@ -33,6 +38,7 @@ public class ReviewService {
     private final PhotoRepository photoRepository;
     private final PlaceRepository placeRepository;
     private final PointRepository pointRepository;
+    private final PointHistoryRepository pointHistoryRepository;
 
     @Transactional
     public void happens(EventsRequestDto eventsRequestDto) {
@@ -46,14 +52,17 @@ public class ReviewService {
         // 리뷰 저장
         if (eventsRequestDto.getAction().equals(Event.ADD)) {
             if (eventsRequestDto.getContent().length() >= 1) {
+                pointHistoryRepository.save(new PointHistory(CONTENT_REVIEW, 1));
                 member.getPoint().addPoint();
             }
             if (eventsRequestDto.getAttachedPhotoIds().size() >= 1) {
+                pointHistoryRepository.save(new PointHistory(PHOTO_REVIEW, 1));
                 member.getPoint().addPoint();
             }
             // 보너스 점수 (사진이 존재하는 리뷰이고, 해당 장소에 리뷰가 없을 경우)
             // 리뷰를 저장한 뒤 상황이기 때문에 해당 장소에 리뷰가 1개 있을 경우로 계산
             if (reviewRepository.findByPlace(place).size() == 1) {
+                pointHistoryRepository.save(new PointHistory(FIRST_REVIEW, 1));
                 member.getPoint().addPoint();
             }
         }
