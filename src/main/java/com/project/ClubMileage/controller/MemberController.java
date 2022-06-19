@@ -3,6 +3,7 @@ package com.project.ClubMileage.controller;
 import com.project.ClubMileage.dto.request.MemberRequestDto;
 import com.project.ClubMileage.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +13,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @PostMapping("/users")
     public void join(@RequestBody MemberRequestDto memberRequestDto) {
         memberService.join(memberRequestDto);
     }
