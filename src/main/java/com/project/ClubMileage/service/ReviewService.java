@@ -6,10 +6,10 @@ import com.project.ClubMileage.domain.Member;
 import com.project.ClubMileage.domain.Photo;
 import com.project.ClubMileage.domain.Place;
 import com.project.ClubMileage.domain.PointHistory;
-import com.project.ClubMileage.domain.PointHistory.PointStatus;
 import com.project.ClubMileage.domain.Review;
 import com.project.ClubMileage.domain.ReviewPointStatus;
 import com.project.ClubMileage.dto.PostRequestDto;
+import com.project.ClubMileage.dto.PostReviseRequestDto;
 import com.project.ClubMileage.dto.request.EventsRequestDto;
 import com.project.ClubMileage.repository.PhotoRepository;
 import com.project.ClubMileage.repository.MemberRepository;
@@ -18,7 +18,7 @@ import com.project.ClubMileage.repository.PointHistoryRepository;
 import com.project.ClubMileage.repository.PointRepository;
 import com.project.ClubMileage.repository.ReviewPointStatusRepository;
 import com.project.ClubMileage.repository.ReviewRepository;
-import com.project.ClubMileage.util.Event;
+import com.project.ClubMileage.util.EventAction;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -58,7 +58,7 @@ public class ReviewService {
         // 특정 장소의 첫 리뷰일 경우 -> 사진이 존재하는 리뷰이고, 해당 장소에 리뷰가 없을 경우
 
         // 리뷰 저장
-        if (eventsRequestDto.getAction().equals(Event.ADD)) {
+        if (eventsRequestDto.getAction().equals(EventAction.ADD)) {
             if (eventsRequestDto.getContent().length() >= 1) {
                 member.getPoint().addPoint();
                 pointHistoryRepository.save(new PointHistory(CONTENT_REVIEW, 1, member.getId(), member.getPoint().getScore()));
@@ -88,20 +88,26 @@ public class ReviewService {
         Member member = memberRepository.findByUuid(postRequestDto.getUserId());
         Place place = placeRepository.findByUuid(postRequestDto.getPlaceId());
 
-        List<Photo> photos = new ArrayList<>();
-        for (String imageUrl : imageUrls) {
-            photos.add(new Photo(imageUrl));
-        }
-        photoRepository.saveAll(photos);
         ReviewPointStatus reviewPointStatus = new ReviewPointStatus();
         reviewPointStatusRepository.save(reviewPointStatus);
-        Review review = new Review(postRequestDto, member, photos, place, reviewPointStatus);
+
+        Review review = new Review(postRequestDto, member, place, reviewPointStatus);
         reviewRepository.save(review);
 
-        sendPostEventRequest(review, postRequestDto.getUserId());
+        List<Photo> photos = new ArrayList<>();
+        for (String imageUrl : imageUrls) {
+            photos.add(new Photo(imageUrl, review));
+        }
+
+        photoRepository.saveAll(photos);
+
+
+
+        sendPostEventRequest(review, postRequestDto.getUserId(), EventAction.ADD);
     }
 
-    private void sendPostEventRequest(Review review, String userUuid) throws JSONException {
+    private void sendPostEventRequest(Review review, String userUuid,
+        EventAction eventAction) throws JSONException {
         String url = "http://localhost:8080/events";
 
         RestTemplate restTemplate = new RestTemplate(); // 비동기 전달
@@ -113,10 +119,7 @@ public class ReviewService {
         arrayList.add("4");
         jsonObject.put("type", "REVIEW");
         jsonObject.put("attachedPhotoIds", arrayList);
-        jsonObject.put("attached", arrayList);
-        jsonObject.put("attachedPhoto", arrayList);
-        jsonObject.put("abc", arrayList);
-        jsonObject.put("action", "add");
+        jsonObject.put("action", eventAction.getValue());
         jsonObject.put("reviewId", review.getUuid());
         jsonObject.put("content", review.getContent());
         jsonObject.put("userId", userUuid);
@@ -124,5 +127,23 @@ public class ReviewService {
 
         HttpEntity<String> logRequest = new HttpEntity<>(jsonObject.toString(), httpHeaders);
         restTemplate.postForEntity(url, logRequest, String.class);
+    }
+
+    @Transactional
+    public void revise(PostReviseRequestDto postReviseRequestDto, List<String> imageUrls)
+        throws JSONException {
+        Member member = memberRepository.findByUuid(postReviseRequestDto.getUserId());
+        Place place = placeRepository.findByUuid(postReviseRequestDto.getPlaceId());
+        Review review = reviewRepository.findByUuid(postReviseRequestDto.getReviewId());
+
+        List<Photo> photos = new ArrayList<>();
+        for (String imageUrl : imageUrls) {
+            photos.add(new Photo(imageUrl, review));
+        }
+
+        review.changeContent(postReviseRequestDto.getContent());
+        review.changePhotos(photos);
+
+        sendPostEventRequest(review, postReviseRequestDto.getUserId(), EventAction.MOD);
     }
 }

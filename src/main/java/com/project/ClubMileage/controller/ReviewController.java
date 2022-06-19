@@ -1,6 +1,7 @@
 package com.project.ClubMileage.controller;
 
 import com.project.ClubMileage.dto.PostRequestDto;
+import com.project.ClubMileage.dto.PostReviseRequestDto;
 import com.project.ClubMileage.dto.request.EventsRequestDto;
 import com.project.ClubMileage.service.ReviewService;
 import java.util.ArrayList;
@@ -8,7 +9,9 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +32,16 @@ public class ReviewController {
             imageUrls = upload(images);
         }
         reviewService.save(postRequestDto, imageUrls);
+    }
+    @PutMapping("/reviews")
+    public void revise(@RequestPart(required = false) PostReviseRequestDto postReviseRequestDto,
+        @RequestPart(required = false) List<MultipartFile> images) throws JSONException {
+
+        List<String> imageUrls = new ArrayList<>();
+        if (images != null && !images.isEmpty()) {
+            imageUrls = upload(images);
+        }
+        reviewService.revise(postReviseRequestDto, imageUrls);
     }
 
     // S3로 파일 업로드하기

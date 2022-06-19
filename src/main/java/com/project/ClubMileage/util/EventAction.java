@@ -5,18 +5,18 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
-public enum Event {
-    ADD("add"), MOD("mod"), DELETE("delete");
+public enum EventAction {
+    ADD("ADD"), MOD("MOD"), DELETE("DELETE");
 
     private final String value;
 
-    Event(String value) {
+    EventAction(String value) {
         this.value = value;
     }
 
     @JsonCreator
-    public static Event from(String value) {
-        for (Event status : Event.values()) {
+    public static EventAction from(String value) {
+        for (EventAction status : EventAction.values()) {
             if (status.getValue().equals(value)) {
                 return status;
             }

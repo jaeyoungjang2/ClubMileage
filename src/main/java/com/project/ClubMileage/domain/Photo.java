@@ -24,7 +24,9 @@ public class Photo {
     @JoinColumn(name = "review_id")
     private Review review;
 
-    public Photo(String imageUrl) {
+    public Photo(String imageUrl, Review review) {
+        this.review = review;
         this.url = imageUrl;
+        review.getPhotos().add(this);
     }
 }
