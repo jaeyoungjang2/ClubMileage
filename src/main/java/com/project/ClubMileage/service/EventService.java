@@ -64,9 +64,18 @@ public class EventService {
             }
         }
 
+        if (eventsRequestDto.getAction().equals(EventAction.MOD)) {
+            if (review.getReviewPointStatus().isContentReview()
+                && eventsRequestDto.getContent().length() < 1) {
+                reviewPointStatus.changeContentReviewStatus();
+            }
 
-        // add 일 경우 이벤트 저장
-        // mod 일 경우 이벤트 수정
+            if (review.getReviewPointStatus().isPhotoReview() && eventsRequestDto.getAttachedPhotoIds().size() < 1) {
+                member.getPoint().addPoint();
+                reviewPointStatus.changePhotoReviewStatus();
+            }
+        }
+
         // delete 일 경우 이벤트 삭제
     }
 }

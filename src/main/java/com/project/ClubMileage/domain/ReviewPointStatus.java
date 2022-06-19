@@ -19,14 +19,14 @@ public class ReviewPointStatus {
     private boolean contentReview;
 
     public void changeContentReviewStatus() {
-        contentReview = true;
+        contentReview = contentReview == true ? false : true;
     }
 
     public void changePhotoReviewStatus() {
-        photoReview = true;
+        photoReview = photoReview == true ? false : true;
     }
 
     public void changeFirstReviewStatus() {
-        firstReview = true;
+        firstReview = firstReview == true ? false : true;
     }
 }
