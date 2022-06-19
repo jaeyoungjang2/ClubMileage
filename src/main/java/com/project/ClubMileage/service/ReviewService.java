@@ -9,7 +9,9 @@ import com.project.ClubMileage.dto.request.EventsRequestDto;
 import com.project.ClubMileage.repository.PhotoRepository;
 import com.project.ClubMileage.repository.MemberRepository;
 import com.project.ClubMileage.repository.PlaceRepository;
+import com.project.ClubMileage.repository.PointRepository;
 import com.project.ClubMileage.repository.ReviewRepository;
+import com.project.ClubMileage.util.Event;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +31,23 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final PhotoRepository photoRepository;
     private final PlaceRepository placeRepository;
+    private final PointRepository pointRepository;
 
     public void happens(EventsRequestDto eventsRequestDto) {
+        Place place = placeRepository.findByUuid(eventsRequestDto.getPlaceId());
+        Member member = memberRepository.findByUuid(eventsRequestDto.getUserId());
+        // 텍스트가 1글자 이상인 경우 1점
+        // 1장 이상의 사진이 있을 경우 1점
+        // 특정 장소의 첫 리뷰일 경우 -> 사진이 존재하는 리뷰이고, 해당 장소에 리뷰가 없을 경우
+        if (eventsRequestDto.getAction().equals(Event.ADD)) {
+            if (eventsRequestDto.getAttachedPhotoIds().size() >= 1
+                && reviewRepository.findByPlace(place).size() == 0) {
+                // toDo: 포인트 변경하기
+                member.getPoint().addPoint();
+            }
+        }
+
+
         // add 일 경우 이벤트 저장
         // mod 일 경우 이벤트 수정
         // delete 일 경우 이벤트 삭제

@@ -9,8 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Member {
 
     @Id
@@ -29,7 +31,8 @@ public class Member {
     @OneToOne
     private Point point;
 
-    public Member(MemberRequestDto memberRequestDto) {
+    public Member(MemberRequestDto memberRequestDto, Point point) {
+        this.point = point;
         this.username = memberRequestDto.getId();
         this.password = memberRequestDto.getPassword();
     }

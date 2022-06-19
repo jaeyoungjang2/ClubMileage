@@ -3,7 +3,6 @@ package com.project.ClubMileage.controller;
 import com.project.ClubMileage.dto.PostRequestDto;
 import com.project.ClubMileage.dto.request.EventsRequestDto;
 import com.project.ClubMileage.service.ReviewService;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

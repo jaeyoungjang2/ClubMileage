@@ -1,6 +1,7 @@
 package com.project.ClubMileage.service;
 
 import com.project.ClubMileage.domain.Member;
+import com.project.ClubMileage.domain.Point;
 import com.project.ClubMileage.dto.request.MemberRequestDto;
 import com.project.ClubMileage.repository.MemberRepository;
 import javax.transaction.Transactional;
@@ -15,7 +16,9 @@ public class MemberService {
 
     @Transactional
     public void join(MemberRequestDto memberRequestDto) {
-        Member member = new Member(memberRequestDto);
+        Point point = new Point();
+        Member member = new Member(memberRequestDto, point);
+
         memberRepository.save(member);
     }
 }

@@ -12,4 +12,12 @@ public class Point {
     private Long id;
 
     private int myPoint;
+
+    public Point() {
+        this.myPoint = 0;
+    }
+
+    public void addPoint() {
+        this.myPoint ++;
+    }
 }
