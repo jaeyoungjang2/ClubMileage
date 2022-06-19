@@ -2,17 +2,14 @@ package com.project.ClubMileage.controller;
 
 import com.project.ClubMileage.dto.PostRequestDto;
 import com.project.ClubMileage.dto.PostReviseRequestDto;
-import com.project.ClubMileage.dto.request.EventsRequestDto;
 import com.project.ClubMileage.service.ReviewService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONException;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,10 +50,5 @@ public class ReviewController {
             imagesUrls.add(fileName);
         }
         return imagesUrls;
-    }
-
-    @PostMapping("/events")
-    public void events(@RequestBody EventsRequestDto eventsRequestDto) {
-        reviewService.happens(eventsRequestDto);
     }
 }
